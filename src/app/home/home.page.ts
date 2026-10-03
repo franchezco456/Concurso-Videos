@@ -13,8 +13,6 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardContent,
-  IonChip,
-  IonLabel,
   IonSpinner,
   IonToast,
   ModalController,
@@ -66,8 +64,6 @@ import { User } from '@supabase/supabase-js';
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    IonChip,
-    IonLabel,
     IonSpinner,
     IonToast,
     IonRefresher,
@@ -86,35 +82,27 @@ export class HomePage implements OnInit {
   public settings = signal<ContestSettings | null>(null);
   public isLoading = signal<boolean>(true);
   public searchTerm = signal<string>('');
-  public selectedSchool = signal<string>('all');
   public currentUser = signal<User | null>(null);
 
   public toastMessage = signal<string>('');
   public isToastOpen = signal<boolean>(false);
   public toastColor = signal<string>('dark');
 
-  // Filtro reactivo por búsqueda y colegio
+  // Filtro reactivo por nombre de proyecto o estudiante/integrante
   public filteredProjects = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
-    const school = this.selectedSchool();
+
+    if (!term) {
+      return this.projects();
+    }
 
     return this.projects().filter((project) => {
-      const matchSearch =
-        !term ||
-        project.project_name.toLowerCase().includes(term) ||
-        project.school_name.toLowerCase().includes(term) ||
-        project.members.some((m) => m.toLowerCase().includes(term));
+      const matchProject = project.project_name.toLowerCase().includes(term);
+      const matchMember = project.members.some((m) => m.toLowerCase().includes(term));
+      const matchSchool = project.school_name.toLowerCase().includes(term);
 
-      const matchSchool = school === 'all' || project.school_name === school;
-
-      return matchSearch && matchSchool;
+      return matchProject || matchMember || matchSchool;
     });
-  });
-
-  // Lista única de colegios para filtro
-  public uniqueSchools = computed(() => {
-    const schools = this.projects().map((p) => p.school_name);
-    return Array.from(new Set(schools)).sort();
   });
 
   constructor() {

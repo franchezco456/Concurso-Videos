@@ -55,37 +55,15 @@
     </div>
   </section>
 
-  <!-- Barra de Filtros y Búsqueda -->
+  <!-- Barra de Búsqueda -->
   <div class="filters-container">
     <div class="filters-inner">
       <ion-searchbar
         [(ngModel)]="searchTerm"
-        placeholder="Buscar por proyecto, institución o integrante..."
+        placeholder="Buscar por proyecto o estudiante..."
         class="custom-searchbar"
         [debounce]="250"
       ></ion-searchbar>
-
-      <!-- Selector de Colegios en Chips -->
-      <div class="school-chips-scroll" *ngIf="uniqueSchools().length > 0">
-        <ion-chip
-          [color]="selectedSchool() === 'all' ? 'primary' : 'medium'"
-          [outline]="selectedSchool() !== 'all'"
-          (click)="selectedSchool.set('all')"
-          class="filter-chip"
-        >
-          <ion-label>Todas las I.E. ({{ projects().length }})</ion-label>
-        </ion-chip>
-
-        <ion-chip
-          *ngFor="let school of uniqueSchools()"
-          [color]="selectedSchool() === school ? 'primary' : 'medium'"
-          [outline]="selectedSchool() !== school"
-          (click)="selectedSchool.set(school)"
-          class="filter-chip"
-        >
-          <ion-label>{{ school }}</ion-label>
-        </ion-chip>
-      </div>
     </div>
   </div>
 
@@ -164,10 +142,10 @@
     <div class="empty-state" *ngIf="filteredProjects().length === 0">
       <ion-icon name="videocam-outline" class="empty-icon"></ion-icon>
       <h3>No se encontraron proyectos</h3>
-      <p *ngIf="searchTerm() || selectedSchool() !== 'all'">
-        Intenta con otro término de búsqueda o selecciona otra institución educativa.
+      <p *ngIf="searchTerm()">
+        Intenta con otro nombre de proyecto o de estudiante.
       </p>
-      <p *ngIf="!searchTerm() && selectedSchool() === 'all'">
+      <p *ngIf="!searchTerm()">
         Aún no hay proyectos aprobados en la plataforma.
       </p>
       <ion-button routerLink="/register" color="primary" class="empty-cta">
