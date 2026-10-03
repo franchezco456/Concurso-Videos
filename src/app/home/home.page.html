@@ -1,0 +1,187 @@
+<ion-header class="ion-no-border header-navbar">
+  <ion-toolbar class="main-toolbar">
+    <div class="navbar-container">
+      <!-- 1. La Cuenta -->
+      <div class="user-account-section">
+        <ng-container *ngIf="currentUser(); else loginBtn">
+          <div class="user-chip-wrapper" [title]="currentUser()?.email">
+            <ion-icon name="person-circle-outline" class="user-avatar-icon"></ion-icon>
+            <span class="user-email-text">{{ currentUser()?.user_metadata?.['full_name'] || currentUser()?.email?.split('@')?.[0] }}</span>
+            <ion-button fill="clear" color="medium" size="small" (click)="logout()" title="Cerrar sesión" class="logout-btn">
+              <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </ng-container>
+        <ng-template #loginBtn>
+          <ion-button fill="outline" color="dark" class="nav-btn google-login-btn" (click)="loginWithGoogle()" title="Acceder con tu cuenta de Google">
+            <ion-icon name="logo-google" slot="start"></ion-icon>
+            <span class="label-desktop">Acceder con Google</span>
+            <span class="label-tablet">Entrar</span>
+          </ion-button>
+        </ng-template>
+      </div>
+
+      <!-- 2. Resultados y 3. Inscribir -->
+      <div class="nav-actions">
+        <!-- 2. Resultados -->
+        <ion-button routerLink="/results" fill="clear" class="nav-btn nav-results-btn" title="Resultados del concurso">
+          <ion-icon name="trophy-outline" slot="start"></ion-icon>
+          <span class="label-desktop">Resultados</span>
+        </ion-button>
+
+        <!-- 3. Inscribir Proyecto -->
+        <ion-button routerLink="/register" color="primary" class="nav-btn nav-cta-btn" title="Inscribir nuevo proyecto">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          <span class="label-desktop">Inscribir Proyecto</span>
+          <span class="label-tablet">Inscribir</span>
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page-content">
+  <ion-refresher slot="fixed" (ionRefresh)="loadData($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Banner Hero Institucional -->
+  <section class="hero-banner">
+    <div class="hero-inner">
+      <h1 class="hero-title">Exhibición y Votación de Proyectos Estudiantiles</h1>
+      <p class="hero-description">
+        Explora las propuestas presentadas por las diferentes instituciones educativas. Conoce sus proyectos en video y apoya a tus favoritos con tu voto.
+      </p>
+    </div>
+  </section>
+
+  <!-- Barra de Filtros y Búsqueda -->
+  <div class="filters-container">
+    <div class="filters-inner">
+      <ion-searchbar
+        [(ngModel)]="searchTerm"
+        placeholder="Buscar por proyecto, institución o integrante..."
+        class="custom-searchbar"
+        [debounce]="250"
+      ></ion-searchbar>
+
+      <!-- Selector de Colegios en Chips -->
+      <div class="school-chips-scroll" *ngIf="uniqueSchools().length > 0">
+        <ion-chip
+          [color]="selectedSchool() === 'all' ? 'primary' : 'medium'"
+          [outline]="selectedSchool() !== 'all'"
+          (click)="selectedSchool.set('all')"
+          class="filter-chip"
+        >
+          <ion-label>Todas las I.E. ({{ projects().length }})</ion-label>
+        </ion-chip>
+
+        <ion-chip
+          *ngFor="let school of uniqueSchools()"
+          [color]="selectedSchool() === school ? 'primary' : 'medium'"
+          [outline]="selectedSchool() !== school"
+          (click)="selectedSchool.set(school)"
+          class="filter-chip"
+        >
+          <ion-label>{{ school }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado de Carga -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p>Cargando proyectos de los estudiantes...</p>
+  </div>
+
+  <!-- Galería de Tarjetas de Proyectos -->
+  <div class="gallery-container" *ngIf="!isLoading()">
+    <div class="projects-grid" *ngIf="filteredProjects().length > 0">
+      <ion-card *ngFor="let project of filteredProjects()" class="project-card">
+        <!-- Contenedor de Miniatura de YouTube -->
+        <div class="card-thumbnail-wrapper" (click)="openVideoModal(project)">
+          <img
+            [src]="youtubeService.getThumbnailUrl(project.youtube_video_id)"
+            [alt]="project.project_name"
+            class="video-thumbnail"
+            loading="lazy"
+          />
+          <div class="thumbnail-overlay">
+            <ion-icon name="play-circle" class="play-overlay-icon"></ion-icon>
+            <span class="play-overlay-text">Reproducir Video</span>
+          </div>
+        </div>
+
+        <ion-card-header class="card-header-clean">
+          <div class="school-badge-wrapper">
+            <ion-icon name="school-outline" class="school-icon"></ion-icon>
+            <span class="school-name-text">{{ project.school_name }}</span>
+          </div>
+          <ion-card-title class="project-title-text">{{ project.project_name }}</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content class="card-content-clean">
+          <div class="team-section">
+            <span class="team-label">Equipo de Trabajo:</span>
+            <div class="team-members">
+              <span *ngFor="let member of project.members; let last = last" class="member-name">
+                {{ member }}{{ !last ? ', ' : '' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Pie de Tarjeta con Acciones -->
+          <div class="card-actions-wrapper">
+            <ion-button
+              fill="outline"
+              color="dark"
+              size="small"
+              class="action-btn-video"
+              (click)="openVideoModal(project)"
+            >
+              <ion-icon name="play-circle" slot="start"></ion-icon>
+              Ver Video
+            </ion-button>
+
+            <ion-button
+              [color]="isProjectLiked(project.id) ? 'danger' : 'medium'"
+              [fill]="isProjectLiked(project.id) ? 'solid' : 'outline'"
+              size="small"
+              class="action-btn-like"
+              (click)="onToggleLike(project, $event)"
+              [title]="isProjectLiked(project.id) ? 'Quitar voto' : 'Votar por este video'"
+            >
+              <ion-icon [name]="isProjectLiked(project.id) ? 'heart' : 'heart-outline'" slot="start"></ion-icon>
+              {{ isProjectLiked(project.id) ? 'Votado' : 'Votar' }}
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Estado Vacío -->
+    <div class="empty-state" *ngIf="filteredProjects().length === 0">
+      <ion-icon name="videocam-outline" class="empty-icon"></ion-icon>
+      <h3>No se encontraron proyectos</h3>
+      <p *ngIf="searchTerm() || selectedSchool() !== 'all'">
+        Intenta con otro término de búsqueda o selecciona otra institución educativa.
+      </p>
+      <p *ngIf="!searchTerm() && selectedSchool() === 'all'">
+        Aún no hay proyectos aprobados en la plataforma.
+      </p>
+      <ion-button routerLink="/register" color="primary" class="empty-cta">
+        Inscribir Primer Proyecto
+      </ion-button>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [color]="toastColor()"
+    duration="2200"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</ion-content>

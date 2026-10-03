@@ -1,0 +1,154 @@
+<ion-header class="ion-no-border header-navbar">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="page-title">Resultados del Concurso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="results-content">
+  <ion-refresher slot="fixed" (ionRefresh)="loadResults($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="results-wrapper">
+    <!-- Estado de Carga -->
+    <div class="loading-state" *ngIf="isLoading()">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Consultando el estado de los resultados...</p>
+    </div>
+
+    <!-- Resultados AÚN NO PÚBLICOS (Votación a Ciegas) -->
+    <div class="closed-results-card" *ngIf="!isLoading() && !settings()?.are_results_public">
+      <div class="icon-circle">
+        <ion-icon name="hourglass-outline"></ion-icon>
+      </div>
+      <h2>Resultados en Proceso de Auditoría</h2>
+      <p class="closed-description">
+        Para garantizar la total imparcialidad, los votos permanecen ocultos durante la etapa activa del concurso.
+        Una vez que el comité organizador concluya la jornada de votación, el podio oficial y el resumen general de votos se publicarán en esta sección.
+      </p>
+
+      <div class="notice-box">
+        <ion-icon name="checkmark-done-circle-outline"></ion-icon>
+        <div>
+          <strong>¡Tu voto cuenta!</strong>
+          <p>Todos los votos emitidos desde los dispositivos están registrados y protegidos en nuestra base de datos.</p>
+        </div>
+      </div>
+
+      <ion-button routerLink="/home" color="primary" class="return-btn">
+        Volver a la Galería de Videos
+      </ion-button>
+    </div>
+
+    <!-- Resultados PÚBLICOS (Podio y Clasificación) -->
+    <div class="public-results-section" *ngIf="!isLoading() && settings()?.are_results_public">
+      <div class="results-header">
+        <div class="official-badge">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span>Resultados Oficiales Publicados</span>
+        </div>
+        <h1>Podio y Resumen de Votación</h1>
+        <p>Agradecemos a todos los estudiantes e instituciones por su destacada participación.</p>
+
+        <div class="stats-pill">
+          <ion-icon name="heart"></ion-icon>
+          <span><strong>{{ totalVotesCast() }}</strong> votos totales registrados en el concurso</span>
+        </div>
+      </div>
+
+      <!-- Podio de los Primeros Lugares -->
+      <div class="podium-grid" *ngIf="topThree().length > 0">
+        <div
+          *ngFor="let item of topThree()"
+          class="podium-card"
+          [class.first-place]="item.rank === 1"
+          [class.second-place]="item.rank === 2"
+          [class.third-place]="item.rank === 3"
+        >
+          <!-- Medalla de Posición -->
+          <div class="rank-medal">
+            <ion-icon
+              [name]="item.rank === 1 ? 'trophy-outline' : item.rank === 2 ? 'medal-outline' : 'ribbon-outline'"
+            ></ion-icon>
+            <span>{{ item.rank }}º Lugar</span>
+            <span *ngIf="item.is_tie" class="podium-tie-badge">Empate</span>
+          </div>
+
+          <!-- Miniatura del Video -->
+          <div class="podium-thumbnail" (click)="openVideoModal(item)">
+            <img [src]="youtubeService.getThumbnailUrl(item.youtube_video_id)" [alt]="item.project_name" />
+            <div class="play-overlay">
+              <ion-icon name="play-circle"></ion-icon>
+            </div>
+          </div>
+
+          <div class="podium-details">
+            <div class="school-text">
+              <ion-icon name="school-outline"></ion-icon>
+              <span>{{ item.school_name }}</span>
+            </div>
+            <h3 class="project-title">{{ item.project_name }}</h3>
+
+            <!-- Métricas de Voto -->
+            <div class="vote-meter">
+              <div class="vote-stats-row">
+                <span class="votes-count">{{ item.total_votes }} votos</span>
+                <span class="votes-percent">{{ item.percentage }}%</span>
+              </div>
+              <ion-progress-bar
+                [value]="(item.percentage || 0) / 100"
+                [color]="item.rank === 1 ? 'warning' : item.rank === 2 ? 'medium' : 'primary'"
+                class="progress-bar-custom"
+              ></ion-progress-bar>
+            </div>
+
+            <ion-button fill="outline" color="dark" size="small" class="view-video-btn" (click)="openVideoModal(item)">
+              Ver Video
+            </ion-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla / Lista de Todas las Posiciones -->
+      <div class="ranking-table-card" *ngIf="results().length > 0">
+        <h2 class="table-heading">Tabla General de Posiciones</h2>
+
+        <div class="ranking-list">
+          <div *ngFor="let item of results()" class="ranking-row">
+            <div class="row-rank">
+              <span
+                class="rank-circle"
+                [class.rank-gold]="item.rank === 1"
+                [class.rank-silver]="item.rank === 2"
+                [class.rank-bronze]="item.rank === 3"
+              >
+                {{ item.rank }}º
+              </span>
+            </div>
+
+            <div class="row-info">
+              <div class="row-project-title">
+                {{ item.project_name }}
+                <span *ngIf="item.is_tie" class="table-tie-badge">Empate</span>
+              </div>
+              <div class="row-school">{{ item.school_name }}</div>
+              <ion-progress-bar
+                [value]="(item.percentage || 0) / 100"
+                color="primary"
+                class="row-progress"
+              ></ion-progress-bar>
+            </div>
+
+            <div class="row-votes">
+              <span class="vote-number">{{ item.total_votes }}</span>
+              <span class="vote-label">votos ({{ item.percentage }}%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

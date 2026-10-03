@@ -1,0 +1,7 @@
+{
+  "name": "concurso-videos-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

@@ -1,0 +1,161 @@
+.header-navbar {
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.main-toolbar {
+  --background: #ffffff;
+  --min-height: 56px;
+}
+
+.page-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-content {
+  --background: #f8fafc;
+}
+
+.login-wrapper {
+  max-width: 460px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+.login-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+  padding: 36px 28px;
+  text-align: center;
+
+  .card-header-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0 0 24px 0;
+    line-height: 1.4;
+  }
+}
+
+.config-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: left;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: #854d0e;
+
+  ion-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  code {
+    background: #fef9c3;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .input-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+
+    ion-icon {
+      font-size: 1rem;
+      color: #2563eb;
+    }
+  }
+
+  .custom-input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 16px; /* Evita auto-zoom en iOS Safari */
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    &.input-error {
+      border-color: #ef4444;
+      background: #fef2f2;
+    }
+  }
+}
+
+.btn-container {
+  margin-top: 8px;
+
+  .submit-login-btn {
+    --border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    height: 46px;
+  }
+}
+
+.back-link {
+  margin-top: 20px;
+}

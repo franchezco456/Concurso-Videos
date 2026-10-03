@@ -1,0 +1,66 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="modal-toolbar">
+    <ion-title class="modal-title">{{ project.project_name }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" aria-label="Cerrar modal" color="medium">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="modal-content">
+  <!-- Reproductor Embebido Responsivo -->
+  <div class="video-container" *ngIf="safeUrl">
+    <iframe
+      [src]="safeUrl"
+      title="Video del Proyecto"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <!-- Detalles del Proyecto -->
+  <div class="project-details">
+    <div class="school-header">
+      <ion-icon name="school-outline" class="school-icon"></ion-icon>
+      <span class="school-name">{{ project.school_name }}</span>
+    </div>
+
+    <h2 class="project-headline">{{ project.project_name }}</h2>
+
+    <!-- Integrantes -->
+    <div class="section-block">
+      <div class="section-title">
+        <ion-icon name="people-outline"></ion-icon>
+        <span>Integrantes del Equipo</span>
+      </div>
+      <div class="members-chips">
+        <ion-chip *ngFor="let member of project.members" class="member-chip" outline="true">
+          <ion-label>{{ member }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border modal-footer">
+  <div class="footer-actions">
+    <ion-button
+      *ngIf="allowVoting"
+      (click)="toggleLike()"
+      [color]="isLiked() ? 'danger' : 'primary'"
+      [fill]="isLiked() ? 'solid' : 'outline'"
+      class="vote-btn"
+      [disabled]="isToggling"
+    >
+      <ion-icon [name]="isLiked() ? 'heart' : 'heart-outline'" slot="start"></ion-icon>
+      {{ isLiked() ? 'Voto registrado (Quitar voto)' : 'Votar por este proyecto' }}
+    </ion-button>
+
+    <ion-button fill="clear" color="medium" (click)="dismiss()">
+      Cerrar
+    </ion-button>
+  </div>
+</ion-footer>

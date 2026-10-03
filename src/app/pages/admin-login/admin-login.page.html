@@ -1,0 +1,91 @@
+<ion-header class="ion-no-border header-navbar">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Volver al Concurso"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="page-title">Acceso Administrativo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="login-content">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="card-header-icon">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+
+      <h1>Panel de Moderación</h1>
+      <p class="subtitle">Acceso exclusivo para el comité organizador y administradores del concurso.</p>
+
+      <!-- Alerta informativa si Supabase no está configurado -->
+      <div class="config-notice" *ngIf="isNotConfigured()">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <div>
+          <strong>Configuración Requerida</strong>
+          <p>
+            Para autenticarte con Supabase Auth, ingresa tu <code>supabaseUrl</code> y <code>supabaseAnonKey</code> en
+            <code>src/environments/environment.ts</code> y ejecuta el script <code>supabase/schema.sql</code>.
+          </p>
+        </div>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="mail-outline"></ion-icon>
+            Correo Electrónico
+          </label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="admin@concurso.edu.co"
+            class="custom-input"
+            [class.input-error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="key-outline"></ion-icon>
+            Contraseña
+          </label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+            class="custom-input"
+            [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          />
+        </div>
+
+        <div class="btn-container">
+          <ion-button
+            type="submit"
+            expand="block"
+            color="primary"
+            class="submit-login-btn"
+            [disabled]="isSubmitting()"
+          >
+            <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
+            <span *ngIf="!isSubmitting()">Iniciar Sesión</span>
+          </ion-button>
+        </div>
+      </form>
+
+      <div class="back-link">
+        <ion-button routerLink="/home" fill="clear" color="medium" size="small">
+          Regresar a la página pública
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [color]="toastColor()"
+    duration="3000"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</ion-content>

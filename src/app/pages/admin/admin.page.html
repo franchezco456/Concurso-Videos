@@ -1,0 +1,215 @@
+<ion-header class="ion-no-border header-navbar">
+  <ion-toolbar class="main-toolbar">
+    <div class="admin-toolbar-inner">
+      <div class="admin-brand">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Panel Administrador</span>
+      </div>
+
+      <div class="admin-user-info">
+        <span class="user-badge">{{ userEmail() }}</span>
+        <ion-button fill="outline" color="dark" size="small" (click)="onSignOut()" class="logout-btn">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Cerrar Sesión
+        </ion-button>
+        <ion-button routerLink="/home" fill="clear" color="medium" size="small">
+          Ir al Inicio
+        </ion-button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="admin-content">
+  <ion-refresher slot="fixed" (ionRefresh)="loadData($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="admin-wrapper">
+    <!-- Panel de Controles Generales -->
+    <div class="settings-card" *ngIf="settings()">
+      <div class="settings-header">
+        <ion-icon name="settings-outline"></ion-icon>
+        <h2>Control del Concurso</h2>
+      </div>
+
+      <div class="toggles-grid">
+        <!-- Votaciones Activas -->
+        <div class="toggle-item">
+          <div class="toggle-text">
+            <strong>Votaciones Públicas</strong>
+            <p>Permite a los usuarios dar like a los videos desde sus dispositivos.</p>
+          </div>
+          <ion-toggle
+            [checked]="settings()!.is_voting_active"
+            (ionChange)="toggleSetting('is_voting_active', $any($event).detail.checked)"
+            color="success"
+          ></ion-toggle>
+        </div>
+
+        <!-- Resultados Públicos (Fin de votación a ciegas) -->
+        <div class="toggle-item highlight-toggle">
+          <div class="toggle-text">
+            <strong>Publicar Resultados al Público</strong>
+            <p>Al activarlo, se revela el podio oficial y el resumen de votos a toda la audiencia.</p>
+          </div>
+          <ion-toggle
+            [checked]="settings()!.are_results_public"
+            (ionChange)="toggleSetting('are_results_public', $any($event).detail.checked)"
+            color="primary"
+          ></ion-toggle>
+        </div>
+
+        <!-- Inscripciones Abiertas -->
+        <div class="toggle-item">
+          <div class="toggle-text">
+            <strong>Inscripciones de Proyectos</strong>
+            <p>Habilita o cierra el formulario público para registrar nuevos proyectos.</p>
+          </div>
+          <ion-toggle
+            [checked]="settings()!.is_registration_open"
+            (ionChange)="toggleSetting('is_registration_open', $any($event).detail.checked)"
+            color="success"
+          ></ion-toggle>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas de Moderación -->
+    <div class="moderation-section">
+      <div class="section-title-row">
+        <h2>Moderación de Proyectos</h2>
+        <ion-button fill="clear" size="small" (click)="loadData()">
+          <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+
+      <ion-segment [value]="selectedSegment()" (ionChange)="onSegmentChange($event)" class="custom-segment">
+        <ion-segment-button value="pending">
+          <ion-label>Pendientes ({{ pendingProjects().length }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="approved">
+          <ion-label>Aprobados ({{ approvedProjects().length }})</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="rejected">
+          <ion-label>Rechazados ({{ rejectedProjects().length }})</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <!-- Estado de Carga -->
+      <div class="loading-state" *ngIf="isLoading()">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Actualizando lista de proyectos...</p>
+      </div>
+
+      <!-- Lista de Proyectos Moderados -->
+      <div class="projects-list" *ngIf="!isLoading()">
+        <div *ngFor="let project of currentSegmentProjects()" class="admin-project-card">
+          <!-- Miniatura con botón de previsualización -->
+          <div class="admin-card-media" (click)="openPreviewModal(project)">
+            <img [src]="youtubeService.getThumbnailUrl(project.youtube_video_id)" [alt]="project.project_name" />
+            <div class="media-overlay">
+              <ion-icon name="play-circle"></ion-icon>
+              <span>Ver Video</span>
+            </div>
+          </div>
+
+          <div class="admin-card-body">
+            <div class="body-top">
+              <div class="school-info">
+                <ion-icon name="school-outline"></ion-icon>
+                <span>{{ project.school_name }}</span>
+              </div>
+              <div class="votes-badge" *ngIf="project.status === 'approved'">
+                <strong>{{ project.total_likes || 0 }}</strong> votos
+              </div>
+            </div>
+
+            <h3 class="project-title">{{ project.project_name }}</h3>
+
+            <div class="team-info">
+              <span class="label">Integrantes:</span>
+              <span class="names">{{ project.members.join(', ') }}</span>
+            </div>
+
+            <!-- Botones de Acción de Moderación -->
+            <div class="card-actions">
+              <!-- Si está pendiente -->
+              <ng-container *ngIf="project.status === 'pending'">
+                <ion-button
+                  color="success"
+                  size="small"
+                  (click)="setProjectStatus(project, 'approved')"
+                  class="action-btn"
+                >
+                  <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                  Aprobar
+                </ion-button>
+                <ion-button
+                  color="warning"
+                  size="small"
+                  (click)="setProjectStatus(project, 'rejected')"
+                  class="action-btn"
+                >
+                  <ion-icon name="close-circle" slot="start"></ion-icon>
+                  Rechazar
+                </ion-button>
+              </ng-container>
+
+              <!-- Si ya está aprobado -->
+              <ng-container *ngIf="project.status === 'approved'">
+                <ion-button
+                  fill="outline"
+                  color="warning"
+                  size="small"
+                  (click)="setProjectStatus(project, 'pending')"
+                  class="action-btn"
+                >
+                  Mover a Pendiente
+                </ion-button>
+              </ng-container>
+
+              <!-- Si fue rechazado -->
+              <ng-container *ngIf="project.status === 'rejected'">
+                <ion-button
+                  color="success"
+                  size="small"
+                  (click)="setProjectStatus(project, 'approved')"
+                  class="action-btn"
+                >
+                  <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                  Aprobar
+                </ion-button>
+              </ng-container>
+
+              <ion-button
+                fill="clear"
+                color="danger"
+                size="small"
+                (click)="deleteProject(project)"
+                class="delete-btn"
+                title="Eliminar Proyecto"
+              >
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estado Vacío del Segmento -->
+        <div class="empty-state" *ngIf="currentSegmentProjects().length === 0">
+          <p>No hay proyectos en estado "{{ selectedSegment() }}" actualmente.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [color]="toastColor()"
+    duration="2400"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</ion-content>

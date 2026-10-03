@@ -1,0 +1,604 @@
+.header-navbar {
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.main-toolbar {
+  --background: #ffffff;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 64px;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+}
+
+.nav-btn {
+  --border-radius: 8px;
+  font-weight: 600;
+  text-transform: none !important; /* Evita mayúsculas gigantes en Android */
+  letter-spacing: normal;
+  margin: 0;
+  --box-shadow: none;
+}
+
+.user-account-section {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  .label-desktop {
+    display: inline;
+  }
+  .label-tablet {
+    display: none;
+  }
+
+  .google-login-btn {
+    font-size: 0.85rem;
+    --border-color: #cbd5e1;
+
+    ion-icon {
+      color: #ea4335;
+      font-size: 1.05rem;
+    }
+  }
+
+  .user-chip-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 3px 8px 3px 8px;
+    border-radius: 20px;
+
+    .user-avatar-icon {
+      font-size: 1.25rem;
+      color: #2563eb;
+      flex-shrink: 0;
+    }
+
+    .user-email-text {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #1e293b;
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .logout-btn {
+      --padding-start: 2px;
+      --padding-end: 2px;
+      margin: 0;
+      height: 24px;
+    }
+  }
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  .label-desktop {
+    display: inline;
+  }
+  .label-tablet {
+    display: none;
+  }
+
+  .nav-results-btn {
+    --color: #475569;
+    font-size: 0.88rem;
+  }
+
+  .nav-cta-btn {
+    font-size: 0.88rem;
+  }
+}
+
+.page-content {
+  --background: #f8fafc;
+}
+
+/* Banner Hero */
+.hero-banner {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+  padding: 48px 20px 36px 20px;
+  text-align: center;
+
+  .hero-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px 0;
+  }
+
+  .hero-description {
+    font-size: 1.05rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+/* Barra de Filtros */
+.filters-container {
+  max-width: 1200px;
+  margin: 24px auto 0 auto;
+  padding: 0 20px;
+
+  .filters-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .custom-searchbar {
+    --background: #ffffff;
+    --border-radius: 10px;
+    --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 0;
+  }
+
+  .school-chips-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      margin: 0;
+      cursor: pointer;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* Galería de Tarjetas */
+.gallery-container {
+  max-width: 1200px;
+  margin: 24px auto 48px auto;
+  padding: 0 20px;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.project-card {
+  margin: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+}
+
+/* Miniatura */
+.card-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  background: #0f172a;
+  cursor: pointer;
+  overflow: hidden;
+
+  .video-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .thumbnail-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    .play-overlay-icon {
+      font-size: 3rem;
+      color: #ffffff;
+    }
+
+    .play-overlay-text {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+  }
+
+  &:hover {
+    .video-thumbnail {
+      transform: scale(1.04);
+    }
+    .thumbnail-overlay {
+      opacity: 1;
+    }
+  }
+}
+
+.card-header-clean {
+  padding: 16px 16px 8px 16px;
+
+  .school-badge-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 8px;
+
+    .school-icon {
+      font-size: 1rem;
+    }
+  }
+
+  .project-title-text {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+  }
+}
+
+.card-content-clean {
+  padding: 8px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+
+  .team-section {
+    margin-bottom: 16px;
+
+    .team-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 4px;
+      letter-spacing: 0.05em;
+    }
+
+    .team-members {
+      font-size: 0.88rem;
+      color: #334155;
+      line-height: 1.4;
+    }
+  }
+
+  .card-actions-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 12px;
+
+    .action-btn-video {
+      flex: 1;
+      --border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .action-btn-like {
+      flex: 1;
+      --border-radius: 8px;
+      font-weight: 600;
+    }
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+
+  .empty-icon {
+    font-size: 3.5rem;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: #64748b;
+    max-width: 440px;
+    margin: 0 auto 20px auto;
+  }
+
+  .empty-cta {
+    --border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+/* Adaptabilidad Responsiva para Móvil, Tablet y Escritorio */
+@media (max-width: 1024px) {
+  .projects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-toolbar {
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --min-height: 56px;
+  }
+
+  .user-account-section {
+    .label-desktop {
+      display: none;
+    }
+    .label-tablet {
+      display: inline;
+    }
+
+    .google-login-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 0.82rem;
+      height: 35px;
+
+      ion-icon {
+        font-size: 1.05rem;
+        margin-right: 4px;
+      }
+    }
+
+    .user-chip-wrapper {
+      padding: 2px 6px;
+      gap: 4px;
+
+      .user-email-text {
+        max-width: 85px;
+        font-size: 0.78rem;
+      }
+    }
+  }
+
+  .nav-actions {
+    gap: 5px;
+
+    .label-desktop {
+      display: none;
+    }
+    .label-tablet {
+      display: inline;
+    }
+
+    .nav-results-btn {
+      --padding-start: 6px;
+      --padding-end: 6px;
+
+      ion-icon {
+        margin: 0 !important;
+        font-size: 1.2rem;
+      }
+
+      .label-desktop,
+      .label-tablet {
+        display: none !important;
+      }
+    }
+
+    .nav-cta-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      font-size: 0.82rem;
+      height: 35px;
+
+      ion-icon {
+        font-size: 1.05rem;
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .hero-banner {
+    padding: 28px 16px 20px 16px;
+
+    .hero-title {
+      font-size: 1.6rem;
+    }
+
+    .hero-description {
+      font-size: 0.95rem;
+      margin-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .main-toolbar {
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+
+  .user-account-section {
+    .google-login-btn {
+      --padding-start: 7px;
+      --padding-end: 7px;
+      font-size: 0.78rem;
+      height: 33px;
+
+      ion-icon {
+        font-size: 0.95rem;
+        margin-right: 3px;
+      }
+    }
+
+    .user-chip-wrapper {
+      padding: 2px 5px;
+
+      .user-avatar-icon {
+        font-size: 1.15rem;
+      }
+
+      .user-email-text {
+        max-width: 70px;
+        font-size: 0.74rem;
+      }
+    }
+  }
+
+  .nav-actions {
+    gap: 4px;
+
+    .nav-results-btn {
+      --padding-start: 4px;
+      --padding-end: 4px;
+      min-width: 32px;
+    }
+
+    .nav-cta-btn {
+      --padding-start: 7px;
+      --padding-end: 7px;
+      font-size: 0.78rem;
+      height: 33px;
+
+      ion-icon {
+        font-size: 0.95rem;
+        margin-right: 3px;
+      }
+    }
+  }
+
+  .hero-banner {
+    padding: 22px 12px 16px 12px;
+
+    .hero-title {
+      font-size: 1.35rem;
+      margin-bottom: 8px;
+    }
+
+    .hero-description {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      margin-bottom: 0;
+    }
+  }
+
+  .filters-container {
+    padding: 0 10px;
+  }
+
+  .gallery-container {
+    padding: 0 10px;
+    margin: 16px auto 36px auto;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .project-card {
+    border-radius: 12px;
+
+    .card-header-clean {
+      padding: 12px 12px 6px 12px;
+
+      .project-title-text {
+        font-size: 1rem;
+      }
+    }
+
+    .card-content-clean {
+      padding: 6px 12px 12px 12px;
+
+      .card-actions-wrapper {
+        .action-btn-video,
+        .action-btn-like {
+          min-height: 38px;
+          font-size: 0.82rem;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .user-account-section {
+    .google-login-btn {
+      --padding-start: 5px;
+      --padding-end: 5px;
+      font-size: 0.74rem;
+    }
+  }
+
+  .nav-actions {
+    .nav-cta-btn {
+      --padding-start: 5px;
+      --padding-end: 5px;
+      font-size: 0.74rem;
+    }
+  }
+}

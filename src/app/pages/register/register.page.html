@@ -1,0 +1,172 @@
+<ion-header class="ion-no-border header-navbar">
+  <ion-toolbar class="main-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Volver"></ion-back-button>
+    </ion-buttons>
+    <ion-title class="page-title">Inscripción al Concurso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="register-content">
+  <div class="form-wrapper">
+    <!-- Vista de Éxito tras enviar -->
+    <div class="success-card" *ngIf="isSubmittedSuccess()">
+      <div class="success-icon-wrapper">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </div>
+      <h2>¡Inscripción Recibida con Éxito!</h2>
+      <p class="success-description">
+        Tu proyecto ha sido registrado satisfactoriamente y ha entrado a la etapa de <strong>Revisión y Moderación</strong>.
+      </p>
+      <div class="info-alert">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>
+          Para mantener la calidad y seguridad del concurso, el video será verificado por el comité antes de aparecer públicamente en las votaciones.
+        </span>
+      </div>
+
+      <div class="success-actions">
+        <ion-button routerLink="/home" color="primary" class="action-btn">
+          Ir a la Galería de Videos
+        </ion-button>
+        <ion-button fill="outline" color="medium" (click)="resetForm()" class="action-btn">
+          Inscribir Otro Proyecto
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Formulario de Inscripción -->
+    <div class="register-card" *ngIf="!isSubmittedSuccess()">
+      <div class="card-intro">
+        <div class="badge-tag">Convocatoria Oficial</div>
+        <h1>Registra tu Proyecto</h1>
+        <p>Completa la información de tu Institución Educativa y el enlace del video en YouTube.</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form-body">
+        <!-- Institución Educativa -->
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="school-outline"></ion-icon>
+            Nombre de la Institución Educativa (I.E.) *
+          </label>
+          <input
+            type="text"
+            formControlName="school_name"
+            placeholder="Ej. Institución Educativa San José"
+            class="custom-input"
+            [class.input-error]="registerForm.get('school_name')?.invalid && registerForm.get('school_name')?.touched"
+          />
+          <span class="error-msg" *ngIf="registerForm.get('school_name')?.invalid && registerForm.get('school_name')?.touched">
+            El nombre de la institución es obligatorio (mínimo 3 caracteres).
+          </span>
+        </div>
+
+        <!-- Nombre del Proyecto -->
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="bulb-outline"></ion-icon>
+            Nombre del Proyecto *
+          </label>
+          <input
+            type="text"
+            formControlName="project_name"
+            placeholder="Ej. Filtro de Agua Ecológico con Biomasa"
+            class="custom-input"
+            [class.input-error]="registerForm.get('project_name')?.invalid && registerForm.get('project_name')?.touched"
+          />
+          <span class="error-msg" *ngIf="registerForm.get('project_name')?.invalid && registerForm.get('project_name')?.touched">
+            El nombre del proyecto es obligatorio.
+          </span>
+        </div>
+
+        <!-- Enlace de YouTube -->
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="logo-youtube"></ion-icon>
+            Enlace del Video de YouTube *
+          </label>
+          <input
+            type="url"
+            formControlName="youtube_url"
+            placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/..."
+            class="custom-input"
+            [class.input-error]="registerForm.get('youtube_url')?.touched && !detectedVideoId()"
+          />
+          <span class="helper-msg" *ngIf="!detectedVideoId() && !registerForm.get('youtube_url')?.touched">
+            Puedes pegar cualquier formato de enlace de YouTube (estándar, shorts o embebido).
+          </span>
+          <span class="error-msg" *ngIf="registerForm.get('youtube_url')?.touched && !detectedVideoId()">
+            Ingresa un enlace válido de YouTube.
+          </span>
+
+          <!-- Vista Previa de la Miniatura de YouTube -->
+          <div class="video-preview-box" *ngIf="detectedVideoId()">
+            <div class="preview-badge">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              <span>Video detectado correctamente</span>
+            </div>
+            <div class="preview-thumbnail">
+              <img [src]="youtubeService.getThumbnailUrl(detectedVideoId()!)" alt="Vista previa del video" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrantes del Equipo -->
+        <div class="form-group">
+          <label class="input-label">
+            <ion-icon name="people-outline"></ion-icon>
+            Integrantes del Equipo (Estudiantes) *
+          </label>
+          <div class="member-input-row">
+            <input
+              type="text"
+              [value]="currentMemberInput()"
+              (input)="currentMemberInput.set($any($event.target).value)"
+              (keydown)="onMemberKeyDown($event)"
+              placeholder="Escribe el nombre del estudiante..."
+              class="custom-input member-input"
+            />
+            <ion-button (click)="addMember()" color="primary" fill="solid" class="add-member-btn" type="button">
+              <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="chips-list" *ngIf="members().length > 0">
+            <ion-chip *ngFor="let member of members(); let i = index" class="member-tag">
+              <ion-label>{{ member }}</ion-label>
+              <ion-icon name="close-circle" (click)="removeMember(i)"></ion-icon>
+            </ion-chip>
+          </div>
+
+          <span class="helper-msg" *ngIf="members().length === 0">
+            Presiona el botón "+" o presiona Enter para agregar cada integrante.
+          </span>
+        </div>
+
+        <!-- Botón de Envío -->
+        <div class="form-submit-wrapper">
+          <ion-button
+            type="submit"
+            expand="block"
+            color="primary"
+            class="submit-btn"
+            [disabled]="isSubmitting()"
+          >
+            <ion-spinner name="crescent" *ngIf="isSubmitting()"></ion-spinner>
+            <span *ngIf="!isSubmitting()">Completar Inscripción</span>
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <ion-toast
+    [isOpen]="isToastOpen()"
+    [message]="toastMessage()"
+    [color]="toastColor()"
+    duration="2500"
+    (didDismiss)="isToastOpen.set(false)"
+    position="bottom"
+  ></ion-toast>
+</ion-content>
